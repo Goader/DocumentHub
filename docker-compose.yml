@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  tika:
+    image: apache/tika:latest
+    container_name: documenthub_tika
+    hostname: documenthub-tika
+    ports:
+      - 9998:9998
+    networks:
+      - documenthub_net
+
+  elasticsearch:
+    image: elasticsearch:8.1.0
+    container_name: documenthub_elasticsearch
+    hostname: documenthub-elasticsearch
+    deploy:
+        resources:
+            limits:
+              memory: 4096M
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - documenthub_net
+    volumes:
+      - elast_data:/usr/share/elasticsearch/data
+    environment:
+      - "discovery.type=single-node"
+      - "xpack.security.enabled=false"
+
+  documenthub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - tika
+      - elasticsearch
+    ports:
+      - 9876:9876
+    environment:
+      - ELASTICSEARCH_HOST=${ELASTICSEARCH_HOST}
+      - ELASTICSEARCH_PORT=${ELASTICSEARCH_PORT}
+      - TIKA_HOST=${TIKA_HOST}
+      - TIKA_PORT=${TIKA_PORT}
+      - TRANSLATOR_HOST=${TRANSLATOR_HOST}
+      - TRANSLATOR_KEY=${TRANSLATOR_KEY}
+    networks:
+      - documenthub_net
+
+
+networks:
+  documenthub_net:
+    driver: bridge
+
+volumes:
+  elast_data:

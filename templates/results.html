@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/results_style.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='images/doc.ico') }}">
+    <title>Results - DocumentHub</title>
+</head>
+<body>
+    <div id="content">
+        <div id="back-button-container">
+            <form action="{{ url_for('index') }}" method="GET">
+                <button class="btn btn-back" type="submit"></button>
+            </form>
+        </div>
+        <div id="results-container">
+            {% for item in results %}
+                <div class="result-item-container">
+                    <div class="result-container">
+                        <div class="result-title-container">
+                            <h1 class="result-title result-text">{{ item.name }}</h1>
+                        </div>
+                        <div class="result-prompt-container">
+                            <h3 class="result-prompt result-text">{{ item.prompt }}</h3>
+                        </div>
+                    </div>
+                    <div class="result-button-container">
+                        <div class="result-button">
+                            <form action="{{ url_for('download', document_id=item.id) }}" method="GET">
+                                <button class="btn btn-download" type="submit"></button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="result-button-container">
+                        <div class="result-button">
+                            <form action="{{ url_for('download', document_id=item.id) }}" method="GET">
+                                <input type="hidden" name="lang" value="pl" />
+                                <button class="btn btn-translate" type="submit"></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
